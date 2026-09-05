@@ -1,0 +1,80 @@
+Agent Status: Static
+
+Your current build is a static, single-run script, not a persistent service. Here's precisely why:
+
+executor_v2.py runs top-to-bottom once, reads data/transactions.csv, processes it, writes logs/*.jsonl, and exits — no server, no listener, no way to receive new failed-payment records without manually re-running from the terminal
+The "dashboard" is a static HTML file baked from a JSONL snapshot at build time — it has no live connection to anything, confirmed directly by the confusion you hit earlier (stale files showing old data)
+There's no database — transactions.csv and the .jsonl logs are flat files, overwritten on every run, no history retained across runs
+There's no API — nothing else (a website, Razorpay webhook, or scheduler) can currently call into this agent
+
+This is completely normal for where you are — Phase 1 was correctly scoped as "prove the decision logic and Razorpay integration work," not "build a production service." Now you're asking the right next question.
+
+Backend Layer — Plan
+
+Goal: turn the script into a callable service that can process one record on demand, not just a full batch.
+
+Wrap the pipeline in FastAPI — one route, POST /process-failure, accepting a single transaction JSON body (matching your TransactionFailure schema), returning the AgentAction + execution result
+Reuse everything you already have — schemas.py, router_v2.py, razorpay_client.py slot in unchanged; only executor_v2.py's batch-loop becomes a per-request call
+Add a webhook-receiver route — POST /webhooks/razorpay to catch real payment.failed events from Razorpay directly, instead of only working off your synthetic CSV
+Background job for batch mode — keep your existing full-batch script as a manually-triggered or scheduled job (e.g. nightly sweep), separate from the live single-record endpoint
+Add basic auth/API key check on the routes before this touches anything real
+Database Layer — Plan
+
+Goal: replace flat CSV/JSONL with persistent, queryable storage.
+
+Pick SQLite to start — zero setup, file-based, upgrade path to Postgres later is a one-line connection-string change if using SQLAlchemy
+Two core tables:
+transactions — mirrors your TransactionFailure schema, one row per failure record, replaces transactions.csv
+audit_log — mirrors your current JSONL entries, one row per decision+execution, replaces audit_log_v2.jsonl, but now append-only and permanent across runs instead of overwritten each time
+Use SQLAlchemy models mirroring your existing Pydantic schemas — minimal duplication, TransactionFailure and AgentAction already define the exact shape needed
+Dashboard becomes a live query, not a bake step — build_dashboard.py's job changes from "read JSONL, inject into HTML" to "query the DB, inject into HTML," fixing the staleness problem you kept hitting at its root
+Suggested order
+
+Database first (gives the backend something real to read/write), then backend endpoints on top of it. Want me to start scaffolding the database layer now — SQLAlchemy models plus a migration script that imports your existing CSV/JSONL into it?
+
+
+Agent Goals — Track 03: AI Revenue Recovery
+
+Primary objective
+
+Detect revenue at risk — classify each failed transaction (subscription, B2B invoice, one-time payment) by root cause: bank decline, insufficient funds, card expired, mandate revoked, invoice overdue, hard decline, bank downtime.
+Choose the right intervention per failure type — not one-size-fits-all: silent retry, payment-link nudge, incentive offer, or human escalation.
+Execute a bounded recovery workflow — real Razorpay Payment Links, gated by explicit stopping rules (max 3 attempts, 1 discount per transaction, hard-fail reasons always escalate).
+
+Secondary objectives
+4. Measure actual money recovered, not just actions taken — separate "link sent" from "payment captured."
+5. Maintain a full audit trail — every decision logged with reasoning, timestamp, and outcome (success or real API error).
+6. Handle real-world constraints gracefully — e.g., Razorpay's Test Mode quota — without crashing or hiding failures.
+7. Stay compliant by design — no silent retries on hard declines/revoked mandates; escalation is structural, not optional.
+
+Current state vs. bar
+
+✅ Diagnosis, routing, execution, audit trail, measured metrics — built and verified (mock + real Test Mode)
+⏳ Not yet met: persistent storage, live/callable service (currently a static batch script)
+
+Now consider the Agent goals and confine the backend and database plans accordingly
+
+Goal-Confined Backend & Database Plans
+
+Every backend/database decision below traces directly back to the 7 agent goals — nothing added that doesn't serve detection, routing, execution, measurement, audit, resilience, or compliance.
+
+Backend Layer — confined scope
+Component	Serves Goal	Why
+POST /process-failure	1, 2, 3	Single-record diagnose→route→execute, callable per-transaction instead of only full-batch
+POST /webhooks/razorpay	1, 6	Real payment.failed events replace synthetic CSV as the actual detection trigger — this is what makes the agent detect live revenue at risk, not simulated
+No auth/multi-tenant/user system	—	Explicitly out of scope — Track 03 judges the recovery logic, not SaaS infrastructure
+No new endpoints for retries/manual override	—	Would contradict goal 7 (bounded, structural escalation) — human escalation stays a terminal state, not something re-triggerable via API
+
+Not building: admin dashboard backend, user accounts, multi-merchant support — none serve the stated goals.
+
+Database Layer — confined scope
+Table	Serves Goal	Why
+transactions	1	Persists what was detected — replaces transactions.csv, gains history
+audit_log	5	Append-only, permanent — the audit trail is a stated goal, currently just an overwritten file
+recovery_metrics (view, not table)	4	Computed from audit_log, distinguishes "link sent" vs "captured" — directly the goal 4 requirement
+
+Not building: customer/user tables, payment-method vaults, multi-currency support, notification-log tables — none trace to a stated goal.
+
+Sequencing
+
+Database first (goals 4, 5 depend on persistence) → backend second (goals 1, 2, 3, 6 depend on a live entry point). Ready to scaffold the database layer on your confirmation.

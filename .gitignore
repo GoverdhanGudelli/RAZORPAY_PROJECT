@@ -1,0 +1,31 @@
+# Environment & Private Credentials (MANDATORY SECURITY)
+.env
+.env.*
+!.env.example
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Database & SQLite files
+*.db
+*.sqlite
+*.sqlite3
+revenue_recovery.db
+
+# Logs & temporary run outputs
+logs/
+*.log
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+
+# IDE files
+.vscode/
+.idea/
+.DS_Store

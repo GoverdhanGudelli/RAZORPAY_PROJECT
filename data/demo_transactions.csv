@@ -1,0 +1,8 @@
+record_id,transaction_type,failure_reason,amount_inr,attempt_count,last_attempt_date,customer_name,customer_language_pref,payment_method,past_recovery_success,subscription_id,days_past_due,invoice_id,due_date,po_reference,counterparty_business_name,checkout_session_id,hours_since_checkout,promised_payment_date,recovery_status
+DEMO001,checkout_abandonment,cart_abandoned,4999,0,2026-09-02,Priya Sharma,hinglish,,True,,,,,,,order_cart_demo01,2,,
+DEMO002,subscription,insufficient_funds,499,0,2026-09-01,Arjun Mehta,hi,upi_autopay,False,SUB_DEMO02,3,,,,,,,,
+DEMO003,subscription,mandate_revoked,799,0,2026-09-01,Neha Kapoor,hinglish,upi_autopay,True,SUB_DEMO03,2,,,,,,,,
+DEMO004,b2b_invoice,invoice_overdue,85000,1,2026-08-28,Vikram Reddy,en,,True,,,INV_DEMO04,2026-08-10,PO-DEMO04,TechNova Solutions Pvt Ltd,,,,
+DEMO005,one_time_payment,insufficient_funds,15000,2,2026-09-01,Anjali Gupta,hinglish,,True,,,,,,,,,,
+DEMO006,subscription,card_expired,999,2,2026-08-25,Rohan Das,hi,credit_card,False,SUB_DEMO06,10,,,,,,,,
+DEMO007,one_time_payment,bank_downtime,3500,1,2026-09-02,Meera Iyer,en,netbanking,False,,,,,,,,,,

@@ -1,0 +1,72 @@
+AI REVENUE RECOVERY AGENT RAZORPAY
+
+
+Top Recommendation to Build: Track 03 (AI Revenue Recovery)
+
+Track 03 hits the absolute sweet spot for a buildathon: high business impact, concrete metrics, and ample room for clean full-stack and AI architecture.
+
+Target Project: Autonomous B2B Receivables & Payment Recovery Engine
+
+Key System Architecture
+
+Trigger & Classification Layer: Evaluates incoming payment failure payloads or overdue invoice events. Diagnoses failure modes (e.g., card expiration, bank gateway timeout, insufficient funds).
+
+Intervention Planner: A state machine that selects the optimal recovery vector (e.g., direct API retries, contextual WhatsApp/Email follow-up, or a localized voice call agent).
+
+Execution & Guardrails Engine: Executes interventions within hard-coded boundary conditions (e.g., maximum retry count, spend limits, strict compliance rules).
+
+Audit & Recovery Dashboard: A React front-end showing live batch progression, net revenue saved, and a clear audit trail for every action taken.
+
+Shall we map out the system design, API contracts, and tech stack to get the repository bootstrapped?
+
+
+Core Architecture & Tech Stack
+
+Backend & Agent Logic: Python (FastAPI) + LangGraph / PydanticAI (for state-machine-driven agent control).
+
+Payment Integration: Razorpay Test Mode APIs (Subscriptions, Invoices, Payment Links).
+
+Database & Ledger: PostgreSQL (storing batch states, transaction logs, and execution traces).
+
+Front-End Dashboard: React + Tailwind CSS (showing live batch processing, recovery percentage, and detailed audit trails).
+
+Phase 1 Execution Plan
+
+Synthetic Dataset Generator: Create a 100-record batch of realistic transaction failures (mix of bank downtime, expired mandates, overdue B2B invoices, and hard declines).
+
+Schema & Guardrail Layer: Define strict Pydantic schemas for the agent's action outputs (e.g., RETRY_PAYMENT, SEND_INCENTIVE_LINK, ESCALATE_TO_HUMAN).
+
+Execution Pipeline: Connect the agent outputs to Razorpay Test Mode API endpoints to create dynamic payment links or execute retries.
+
+Audit Log & Front-End UI: Build a clean dashboard visualizing the total batch value, amount successfully recovered, and step-by-step agent logs.
+
+
+What's built
+100-record dataset — generate_data_v2.py, mix of subscriptions (59), B2B invoices (25), one-time payments (16), covering bank downtime, mandate revocation, overdue B2B, hard declines, and more. Schema-validated on generation — 0 rejected.
+Guardrail schemas — schemas.py. TransactionFailure for input, AgentAction for output with hard caps baked in (discount ≤20%, retry delay ≤7 days). Tried to construct an invalid action in testing — Pydantic rejected it before it could reach execution.
+Execution pipeline — razorpay_client.py + router_v2.py + executor_v2.py. Router logic never changes between mock and real; only the client swaps on MOCK_MODE env var. Ran full pipeline: 100 records → 17 retries, 48 payment links, 8 incentive offers, 27 escalations, all logged with realistic mock API responses (paise conversion, rzp.io links, payment IDs).
+Dashboard — live above, built from your actual pipeline output, not placeholder data.
+
+What changed, and why it matters for judges
+
+Fixed against real API contract — verified field names, amount-in-paise, reference_id uniqueness, and phone format directly from Razorpay's docs rather than assuming my earlier guess was right.
+
+Hard safety guard — refuses to run unless RAZORPAY_KEY_ID starts with rzp_test_. If you ever paste a live key by mistake, it stops before touching anything. This alone is a strong signal to judges that you understand production risk.
+
+Quota governor, two layers deep — Test Mode caps at 30 Payment Links total. Real runs default to a 10-record sample (BATCH_SIZE env var to change), plus a second independent cap inside the client itself that hard-stops before hitting Razorpay's real ceiling. I also caught and fixed a real bug here — my first draft created a fresh client per record, silently resetting the cap counter to 0 every time. Fixed to share one client across the whole run.
+
+Honest about RETRY_PAYMENT — there's no real "retry an arbitrary past payment" endpoint on Razorpay. Rather than fake it, real mode falls back to creating a fresh Payment Link and tags it retry_via: "fresh_payment_link" in the audit log, so it's never silently misrepresented as something more than it is.
+
+Do this on your machine
+
+Get your Test Mode keys from Razorpay Dashboard → Settings → API Keys, then in src/:
+
+powershell
+$env:RAZORPAY_KEY_ID="rzp_test_xxxxxxxxxxxx"
+$env:RAZORPAY_KEY_SECRET="xxxxxxxxxxxxxxxx"
+$env:MOCK_MODE="false"
+python executor_v2.py
+
+This'll process 10 real records, actually create real (test-mode) payment links, and you'll get real plink_... IDs and clickable rzp.io/... URLs back — genuinely different from the mock run. Run build_dashboard.py after to see it reflected live in your dashboard.
+
+

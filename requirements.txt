@@ -1,0 +1,19 @@
+# Revenue Recovery Agent — Python dependencies
+#
+# Install:  pip install -r requirements.txt
+# Or one-off: pip install fastapi uvicorn[standard] sqlalchemy
+#
+# razorpay and requests are already installed from the pipeline setup;
+# listed here for completeness so `pip install -r requirements.txt` is
+# a complete, reproducible install from a fresh environment.
+
+fastapi>=0.111.0
+uvicorn[standard]>=0.29.0
+sqlalchemy>=2.0.0
+pydantic>=2.0.0
+razorpay>=2.0.0
+requests>=2.31.0
+faker>=24.0.0
+
+# Voice agent (Vapi) uses plain REST via 'requests' -- no new package needed.
+# Set VAPI_API_KEY in your environment for real calls.

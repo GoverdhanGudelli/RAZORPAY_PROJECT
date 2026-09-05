@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Razorpay Revenue Recovery Agent — Live Executive Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #070A0F;
+      --card: #0F141C;
+      --card-border: #1E2634;
+      --text: #F1F5F9;
+      --muted: #94A3B8;
+      --teal: #2DD4BF;
+      --teal-glow: rgba(45, 212, 191, 0.25);
+      --coral: #FB7185;
+      --amber: #FBBF24;
+      --violet: #A78BFA;
+      --blue: #38BDF8;
+      --pink: #F472B6;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: radial-gradient(circle at 15% 15%, rgba(45, 212, 191, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 85% 75%, rgba(167, 139, 250, 0.05) 0%, transparent 40%),
+        var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      padding: 32px 24px 70px;
+      min-height: 100vh;
+    }
+
+    .wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .hdr {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 14px;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 18px;
+    }
+
+    .hdr-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .hdr-logo {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--teal), var(--violet));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: #000;
+      font-size: 18px;
+      box-shadow: 0 0 20px var(--teal-glow);
+    }
+
+    .hdr h1 {
+      font-size: 22px;
+      font-weight: 800;
+      margin: 0 0 4px;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #FFFFFF 40%, var(--teal) 80%, var(--violet) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hdr .sub {
+      color: var(--muted);
+      font-size: 12.5px;
+      font-family: var(--mono);
+    }
+
+    .badges {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .badge {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 20px;
+      letter-spacing: 0.02em;
+      border: 1px solid;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge.teal {
+      color: var(--teal);
+      border-color: rgba(45, 212, 191, .4);
+      background: rgba(45, 212, 191, .08);
+      box-shadow: 0 0 12px var(--teal-glow);
+    }
+
+    .badge.amber {
+      color: var(--amber);
+      border-color: rgba(251, 191, 36, .4);
+      background: rgba(251, 191, 36, .08);
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--teal);
+      box-shadow: 0 0 8px var(--teal);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        opacity: 0.4;
+        transform: scale(0.9);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.2);
+      }
+
+      100% {
+        opacity: 0.4;
+        transform: scale(0.9);
+      }
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    @media(max-width:900px) {
+      .metrics {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .metric {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 16px;
+      transition: all .2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .metric:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    .metric .label {
+      font-size: 10.5px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .metric .value {
+      font-family: var(--mono);
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .metric .value.teal {
+      color: var(--teal);
+      filter: drop-shadow(0 0 10px var(--teal-glow));
+    }
+
+    .metric .value.coral {
+      color: var(--coral);
+      filter: drop-shadow(0 0 10px rgba(251, 113, 133, 0.3));
+    }
+
+    .metric .foot {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 6px;
+      font-family: var(--mono);
+    }
+
+    .disclosure {
+      background: rgba(251, 191, 36, .06);
+      border: 1px solid rgba(251, 191, 36, .25);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 12px;
+      color: var(--amber);
+      margin-bottom: 24px;
+      line-height: 1.5;
+      font-family: var(--mono);
+    }
+
+    .grid3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    @media(max-width:900px) {
+      .grid3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 20px;
+      transition: border-color .2s;
+    }
+
+    .panel:hover {
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .panel h2 {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin: 0 0 18px;
+      font-weight: 700;
+    }
+
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .bar-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .bar-label {
+      width: 125px;
+      font-size: 11px;
+      font-family: var(--mono);
+      flex-shrink: 0;
+      color: var(--text);
+    }
+
+    .bar-track {
+      flex: 1;
+      background: #141B26;
+      border-radius: 6px;
+      height: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 8px;
+      transition: width 0.6s ease-out;
+    }
+
+    .bar-count {
+      font-family: var(--mono);
+      font-size: 10.5px;
+      color: #000;
+      font-weight: 800;
+    }
+
+    .table-panel {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .table-hdr {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .table-hdr h2 {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin: 0;
+      font-weight: 700;
+    }
+
+    .filters {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .filt-btn {
+      font-family: var(--mono);
+      font-size: 10.5px;
+      background: #141B26;
+      color: var(--muted);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 5px 12px;
+      cursor: pointer;
+      transition: all .15s;
+      font-weight: 500;
+    }
+
+    .filt-btn:hover {
+      border-color: var(--teal);
+      color: var(--teal);
+    }
+
+    .filt-btn.active {
+      background: rgba(45, 212, 191, .12);
+      color: var(--teal);
+      border-color: var(--teal);
+      font-weight: 700;
+    }
+
+    .audit-row {
+      display: grid;
+      grid-template-columns: 82px 80px 105px 1fr 140px 110px 110px 22px;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 6px;
+      border-bottom: 1px solid var(--card-border);
+      font-size: 11.5px;
+      transition: background .15s;
+    }
+
+    .audit-row:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .audit-row:last-child {
+      border-bottom: none;
+    }
+
+    .audit-row .rid {
+      font-family: var(--mono);
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .audit-row .type-chip {
+      font-family: var(--mono);
+      font-size: 9.5px;
+      padding: 3px 7px;
+      border-radius: 4px;
+      background: #141B26;
+      text-align: center;
+      color: var(--text);
+    }
+
+    .audit-row .reason-chip {
+      font-family: var(--mono);
+      font-size: 9.5px;
+      padding: 3px 7px;
+      border-radius: 4px;
+      background: #141B26;
+      text-align: center;
+      white-space: nowrap;
+      color: var(--muted);
+    }
+
+    .audit-row .reasoning {
+      color: var(--muted);
+      line-height: 1.4;
+      font-size: 11px;
+    }
+
+    .audit-row .action-chip {
+      font-family: var(--mono);
+      font-size: 9.5px;
+      padding: 4px 9px;
+      border-radius: 6px;
+      text-align: center;
+      font-weight: 700;
+      white-space: nowrap;
+      letter-spacing: 0.02em;
+    }
+
+    .audit-row .api-detail {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .audit-row .api-detail a {
+      color: var(--violet);
+      text-decoration: none;
+      transition: color .15s;
+      font-weight: 600;
+    }
+
+    .audit-row .api-detail a:hover {
+      color: var(--teal) !important;
+      text-decoration: underline;
+    }
+
+    .thead {
+      display: grid;
+      grid-template-columns: 82px 80px 105px 1fr 140px 110px 110px 22px;
+      gap: 10px;
+      font-size: 9.5px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--muted);
+      padding: 0 6px 10px;
+      border-bottom: 1px solid var(--card-border);
+      margin-bottom: 4px;
+      font-weight: 700;
+    }
+
+    .table-scroll {
+      max-height: 480px;
+      overflow-y: auto;
+    }
+
+    .table-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .table-scroll::-webkit-scrollbar-thumb {
+      background: var(--card-border);
+      border-radius: 3px;
+    }
+
+    /* ---- Voice Recovery Panel ---- */
+    .voice-panel {
+      background: var(--card);
+      border: 1px solid rgba(244, 114, 182, .35);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 0 20px rgba(244, 114, 182, 0.05);
+    }
+
+    .voice-panel h2 {
+      font-size: 12.5px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--pink);
+      margin: 0 0 16px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .voice-metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .voice-metric {
+      background: #141B26;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+
+    .voice-metric .v-label {
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 4px;
+      font-weight: 700;
+    }
+
+    .voice-metric .v-val {
+      font-family: var(--mono);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--pink);
+    }
+
+    .launch-btn {
+      background: linear-gradient(135deg, var(--pink), var(--violet));
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 800;
+      padding: 11px 22px;
+      cursor: pointer;
+      letter-spacing: .04em;
+      transition: all .2s;
+      box-shadow: 0 4px 14px rgba(244, 114, 182, 0.3);
+    }
+
+    .launch-btn:hover {
+      transform: scale(1.03);
+      box-shadow: 0 6px 20px rgba(244, 114, 182, 0.45);
+    }
+
+    .launch-btn:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .transcript-btn {
+      font-family: var(--mono);
+      font-size: 9.5px;
+      background: rgba(167, 139, 250, .15);
+      color: var(--violet);
+      border: 1px solid rgba(167, 139, 250, .4);
+      border-radius: 4px;
+      padding: 3px 9px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .transcript-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .8);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .transcript-modal.open {
+      display: flex;
+    }
+
+    .transcript-box {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 26px;
+      max-width: 620px;
+      width: 92%;
+      max-height: 75vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+    }
+
+    .transcript-box h3 {
+      margin: 0 0 16px;
+      font-size: 15px;
+      color: var(--pink);
+      font-weight: 800;
+    }
+
+    .t-msg {
+      margin-bottom: 10px;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .t-msg.user {
+      color: var(--teal);
+      font-weight: 600;
+    }
+
+    .t-msg.assistant {
+      color: var(--text);
+    }
+
+    .t-msg.tool {
+      color: var(--amber);
+      font-size: 11px;
+      font-family: var(--mono);
+    }
+
+    .footer-note {
+      text-align: center;
+      color: var(--muted);
+      font-size: 11.5px;
+      font-family: var(--mono);
+      margin-top: 28px;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="hdr">
+      <div class="hdr-brand">
+        <div class="hdr-logo">⚡</div>
+        <div>
+          <h1>Razorpay Revenue Recovery Agent v2</h1>
+          <div class="sub">Bounded Decision Engine · ML Propensity · Hinglish Voice Agent · Live Razorpay API Execution
+          </div>
+        </div>
+      </div>
+      <div class="badges">
+        <div class="badge teal">
+          <div class="pulse-dot"></div> LIVE RAZORPAY API CONNECTED
+        </div>
+        <div class="badge amber" id="mock-badge">MODE: LIVE TEST</div>
+        <div class="badge teal" id="run-badge">100 RECORDS</div>
+      </div>
+    </div>
+
+    <div class="metrics">
+      <div class="metric">
+        <div class="label">At Risk</div>
+        <div class="value" id="m-atrisk">₹0</div>
+        <div class="foot">across 100 txns</div>
+      </div>
+      <div class="metric">
+        <div class="label">Recovered</div>
+        <div class="value teal" id="m-recovered">₹0</div>
+        <div class="foot" id="m-rate">0% recovery</div>
+      </div>
+      <div class="metric">
+        <div class="label">Links Sent</div>
+        <div class="value" id="m-links">0</div>
+        <div class="foot">pending customer action</div>
+      </div>
+      <div class="metric">
+        <div class="label">Escalated</div>
+        <div class="value coral" id="m-escalated">0</div>
+        <div class="foot" id="m-esc-pct">0% of cases</div>
+      </div>
+      <div class="metric">
+        <div class="label">Incentive Cap</div>
+        <div class="value" id="m-incentive">0/0</div>
+        <div class="foot">1 discount per txn, enforced</div>
+      </div>
+    </div>
+
+    <div class="disclosure" id="disclosure-text">⚠ Loading disclosure...</div>
+
+    <!-- Buildathon Track 03 Live Intelligence Panels -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;">
+      <div class="panel" style="border-left:4px solid var(--coral);">
+        <h2>📉 Payment Degradation Radar (Live API)</h2>
+        <div id="degradation-panel" style="font-size:12px;font-family:var(--mono);color:var(--muted);line-height:1.5;">
+          Connecting to http://127.0.0.1:8000/analyze/degradation...
+        </div>
+      </div>
+      <div class="panel" style="border-left:4px solid var(--violet);">
+        <h2>🤝 Promises-to-Pay & B2B Receivables (Live API)</h2>
+        <div id="promises-panel" style="font-size:12px;font-family:var(--mono);color:var(--muted);line-height:1.5;">
+          Connecting to http://127.0.0.1:8000/promises/overdue...
+        </div>
+      </div>
+    </div>
+
+    <div class="grid3">
+      <div class="panel">
+        <h2>Action Breakdown</h2>
+        <div id="bar-chart"></div>
+      </div>
+      <div class="panel">
+        <h2>Transaction Types</h2>
+        <div id="type-chart"></div>
+      </div>
+      <div class="panel">
+        <h2>Failure Reasons</h2>
+        <div id="reason-chart"></div>
+      </div>
+    </div>
+
+    <div class="table-panel">
+      <div class="table-hdr">
+        <h2>Live Execution Audit Trail & Multilingual Messaging</h2>
+        <div class="filters" id="filters"></div>
+      </div>
+      <div class="thead" style="grid-template-columns:78px 76px 95px 1fr 140px 110px 110px 22px;">
+        <div>TXN ID</div>
+        <div>TYPE</div>
+        <div>REASON</div>
+        <div>REASONING & CUSTOMER MSG</div>
+        <div>ACTION</div>
+        <div>API RESULT</div>
+        <div>LANG MSG</div>
+        <div></div>
+      </div>
+      <div class="table-scroll">
+        <div id="audit-body"></div>
+      </div>
+    </div>
+
+    <!-- Voice Recovery Agent Panel -->
+    <div class="voice-panel" id="voice-panel">
+      <div
+        style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+        <h2 style="margin:0;">🎙️ Hinglish Voice Recovery Agent</h2>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <span id="vapi-status-badge"
+            style="font-family:var(--mono);font-size:10px;padding:3px 9px;border-radius:12px;background:rgba(244,114,182,.1);color:#F472B6;border:1px solid rgba(244,114,182,.3);">VAPI
+            READY</span>
+          <button class="launch-btn" id="launch-voice-btn" onclick="openVoiceLauncher()">▶ Launch Demo Call
+            (Riya)</button>
+        </div>
+      </div>
+      <div class="voice-metrics">
+        <div class="voice-metric">
+          <div class="v-label">Calls Initiated</div>
+          <div class="v-val" id="v-total">—</div>
+        </div>
+        <div class="voice-metric">
+          <div class="v-label">Connected</div>
+          <div class="v-val" id="v-connected">—</div>
+        </div>
+        <div class="voice-metric">
+          <div class="v-label">Links Sent via Call</div>
+          <div class="v-val" id="v-converted">—</div>
+        </div>
+        <div class="voice-metric">
+          <div class="v-label">PTP Scheduled</div>
+          <div class="v-val" id="v-ptp">—</div>
+        </div>
+      </div>
+      <div
+        style="font-size:10.5px;color:var(--muted);font-family:var(--mono);margin-bottom:10px;padding:8px 10px;background:#1A2029;border-radius:6px;"
+        id="voice-config-note">
+        Riya speaks natural Hinglish · Gemini 1.5 Flash brain · Sarvam AI (Indian TTS) · 4 live tools:
+        send_payment_link, schedule_ptp_retry, mark_opt_out, escalate_to_human
+      </div>
+      <div
+        style="display:grid;grid-template-columns:100px 90px 80px 80px 1fr 100px;gap:10px;font-size:9.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);padding:0 6px 8px;border-bottom:1px solid var(--card-border);margin-bottom:2px;">
+        <div>Call ID</div>
+        <div>Record</div>
+        <div>Status</div>
+        <div>Outcome</div>
+        <div>Script Preview</div>
+        <div>Actions</div>
+      </div>
+      <div id="voice-call-list" style="max-height:260px;overflow-y:auto;font-size:11px;">
+        <div style="color:var(--muted);font-family:var(--mono);padding:12px 6px;">Loading voice calls from API...</div>
+      </div>
+    </div>
+
+    <!-- Sarvam AI Live Audio Synthesis Panel -->
+    <div class="voice-panel" id="sarvam-panel" style="border-color:rgba(94,234,212,.3);">
+      <div
+        style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+        <h2 style="margin:0;color:var(--teal);">🔊 Sarvam AI Neural Audio Studio (Hinglish TTS)</h2>
+        <span
+          style="font-family:var(--mono);font-size:10px;padding:3px 9px;border-radius:12px;background:rgba(94,234,212,.1);color:var(--teal);border:1px solid rgba(94,234,212,.3);">SARVAM
+          BULBUL:V3</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 180px 140px;gap:10px;align-items:center;margin-bottom:12px;">
+        <input id="sarvam-text-input" type="text"
+          value="Namaste Priya ji! Main Riya bol rahi hoon. Aapka 15,000 rupees ka payment pending hai."
+          style="background:#1A2029;border:1px solid var(--card-border);border-radius:6px;padding:8px 12px;color:var(--text);font-family:var(--mono);font-size:11.5px;width:100%;">
+        <select id="sarvam-speaker-select"
+          style="background:#1A2029;border:1px solid var(--card-border);border-radius:6px;padding:8px;color:var(--teal);font-family:var(--mono);font-size:11.5px;">
+          <option value="priya">priya (Female Warm)</option>
+          <option value="ritu">ritu (Female Prof)</option>
+          <option value="neha">neha (Female Expr)</option>
+          <option value="pooja">pooja (Female Natural)</option>
+          <option value="simran">simran (Female Friendly)</option>
+          <option value="rahul">rahul (Male Neutral)</option>
+          <option value="rohan">rohan (Male Friendly)</option>
+          <option value="aditya">aditya (Male Formal)</option>
+        </select>
+        <button class="launch-btn" style="background:linear-gradient(135deg,var(--teal),#60A5FA);color:#0B0E14;"
+          onclick="generateSarvamAudio()">▶ Play Speech</button>
+      </div>
+      <div id="sarvam-audio-result"
+        style="display:none;background:#1A2029;border:1px solid var(--card-border);border-radius:8px;padding:12px;align-items:center;gap:14px;flex-wrap:wrap;">
+        <audio id="sarvam-audio-player" controls style="height:36px;flex:1;"></audio>
+        <div id="sarvam-audio-meta" style="font-family:var(--mono);font-size:10.5px;color:var(--muted);"></div>
+      </div>
+    </div>
+
+    <!-- Transcript Modal -->
+    <div class="transcript-modal" id="transcript-modal" onclick="if(event.target===this)closeTranscript()">
+      <div class="transcript-box">
+        <button class="close-modal" onclick="closeTranscript()">✕</button>
+        <h3>📞 Call Transcript</h3>
+        <div id="transcript-content"></div>
+      </div>
+    </div>
+
+    <!-- Voice Call Launcher Modal -->
+    <div class="transcript-modal" id="launcher-modal" onclick="if(event.target===this)closeLauncher()">
+      <div class="transcript-box" style="max-width:480px;">
+        <button class="close-modal" onclick="closeLauncher()">✕</button>
+        <h3>🎙️ Launch Hinglish Voice Demo</h3>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:16px;">Riya will greet the customer in Hinglish and
+          attempt recovery. Fill in transaction details to inject context.</p>
+        <div style="display:grid;gap:10px;">
+          <div><label style="font-size:10px;color:var(--muted);font-family:var(--mono);">TRANSACTION ID</label><br>
+            <input id="l-record" type="text" placeholder="e.g. DEMO001"
+              style="width:100%;background:#1A2029;border:1px solid var(--card-border);border-radius:6px;padding:7px 10px;color:var(--text);font-family:var(--mono);font-size:12px;margin-top:4px;">
+          </div>
+          <div><label style="font-size:10px;color:var(--muted);font-family:var(--mono);">CUSTOMER NAME</label><br>
+            <input id="l-name" type="text" placeholder="e.g. Priya Sharma"
+              style="width:100%;background:#1A2029;border:1px solid var(--card-border);border-radius:6px;padding:7px 10px;color:var(--text);font-family:var(--mono);font-size:12px;margin-top:4px;">
+          </div>
+          <div><label style="font-size:10px;color:var(--muted);font-family:var(--mono);">AMOUNT (₹ INR)</label><br>
+            <input id="l-amount" type="number" placeholder="15000"
+              style="width:100%;background:#1A2029;border:1px solid var(--card-border);border-radius:6px;padding:7px 10px;color:var(--text);font-family:var(--mono);font-size:12px;margin-top:4px;">
+          </div>
+          <div><label style="font-size:10px;color:var(--muted);font-family:var(--mono);">FAILURE REASON</label><br>
+            <input id="l-reason" type="text" placeholder="bank_decline"
+              style="width:100%;background:#1A2029;border:1px solid var(--card-border);border-radius:6px;padding:7px 10px;color:var(--text);font-family:var(--mono);font-size:12px;margin-top:4px;">
+          </div>
+          <button class="launch-btn" id="l-submit-btn" onclick="submitVoiceLaunch()" style="width:100%;padding:12px;">▶
+            Start Call with Riya</button>
+          <div id="l-result" style="font-size:11px;font-family:var(--mono);color:var(--muted);"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-note">schema-validated input → deterministic router → validated action → Razorpay client
+      (mock/real via env flag) → audit log → Riya (Hinglish Voice · Vapi + Gemini 1.5 Flash)</div>
+  </div>
+
+  <script>
+    const AUDIT = [{"timestamp": "2026-09-05T14:01:54.881149+00:00", "record_id": "TXN0001", "transaction_type": "subscription", "failure_reason": "card_expired", "amount_inr": 499, "attempt_count": 2, "action_taken": "ESCALATE_TO_HUMAN", "reasoning": "Subscription SUB0001 past grace (9d) \u2014 involuntary churn risk; retention agent required (cancel-at-period-end vs retry decision).", "stop_after_this": true, "propensity_score": 0.26, "execution": {"record_id": "TXN0001", "action": "ESCALATE_TO_HUMAN", "executed_at": "2026-09-05T14:01:54.863978+00:00", "mock_mode": false, "message_language": "hinglish", "propensity_score": 0.26, "deferred": false, "api_response": null, "outcome": "escalated_no_api_call", "customer_message": "Hi Pranav, aapke account mein Rs.499 pending hai. Hamaari team aapse jald contact karegi."}}, {"timestamp": "2026-09-05T14:01:54.887134+00:00", "record_id": "TXN0002", "transaction_type": "subscription", "failure_reason": "mandate_revoked", "amount_inr": 299, "attempt_count": 1, "action_taken": "ESCALATE_TO_HUMAN", "reasoning": "Mandate revoked requires fresh customer consent \u2014 cannot automate.", "stop_after_this": true, "propensity_score": 0.28, "execution": {"record_id": "TXN0002", "action": "ESCALATE_TO_HUMAN", "executed_at": "2026-09-05T14:01:54.881224+00:00", "mock_mode": false, "message_language": "hi", "propensity_score": 0.28, "deferred": false, "api_response": null, "outcome": "escalated_no_api_call", "customer_message": "\u0906\u092a\u0915\u0947 \u0916\u093e\u0924\u0947 \u092a\u0930 Rs.299 \u092c\u0915\u093e\u092f\u093e \u0939\u0948\u0964 \u0939\u092e\u093e\u0930\u0940 \u091f\u0940\u092e \u091c\u0932\u094d\u0926 \u0906\u092a\u0938\u0947 \u0938\u0902\u092a\u0930\u094d\u0915 \u0915\u0930\u0947\u0917\u0940\u0964"}}, {"timestamp": "2026-09-05T14:01:55.578546+00:00", "record_id": "TXN0003", "transaction_type": "b2b_invoice", "failure_reason": "invoice_overdue", "amount_inr": 120000, "attempt_count": 3, "action_taken": "INITIATE_VOICE_CALL", "reasoning": "Attempt cap (3) reached on high-value txn (\u20b9120000). Final Hinglish voice recovery before human queue.", "stop_after_this": true, "propensity_score": 0.17, "execution": {"record_id": "TXN0003", "action": "INITIATE_VOICE_CALL", "executed_at": "2026-09-05T14:01:54.887206+00:00", "mock_mode": false, "message_language": "hinglish", "propensity_score": 0.17, "deferred": false, "api_response": {"id": null, "status": "error", "channel": "voice_webrtc", "provider": "vapi", "web_call_url": null, "voice_script": "Hello Kashish! Main aapke pending payment ke baare mein call kar raha hoon \u2014 amount hai 120,000 rupees. ... Payment link WhatsApp pe chahiye to 1 dabaiye, ya agent se baat karne ke liye line pe rahiye. Dhanyavaad!", "language": "hinglish", "mock": false, "error": "401 Client Error: Unauthorized for url: https://api.vapi.ai/call"}, "outcome": "voice_call_initiated", "customer_message": "Hello Kashish! Main aapke pending payment ke baare mein call kar raha hoon \u2014 amount hai 120,000 rupees. ... Payment link WhatsApp pe chahiye to 1 dabaiye, ya agent se baat karne ke liye line pe rahiye. Dhanyavaad!", "voice": {"language": "hinglish", "script": "Hello Kashish! Main aapke pending payment ke baare mein call kar raha hoon \u2014 amount hai 120,000 rupees. ... Payment link WhatsApp pe chahiye to 1 dabaiye, ya agent se baat karne ke liye line pe rahiye. Dhanyavaad!", "estimated_duration_sec": 14, "reason": "invoice_overdue", "channel": "voice_ivr"}}}, {"timestamp": "2026-09-05T14:02:12.638550+00:00", "record_id": "TXN0004", "transaction_type": "subscription", "failure_reason": "card_expired", "amount_inr": 299, "attempt_count": 1, "action_taken": "SEND_PAYMENT_LINK", "reasoning": "Subscription SUB0004 card_expired \u2014 send link so customer can update payment method.", "stop_after_this": false, "propensity_score": 0.38, "execution": {"record_id": "TXN0004", "action": "SEND_PAYMENT_LINK", "executed_at": "2026-09-05T14:01:55.578617+00:00", "mock_mode": false, "message_language": "hi", "propensity_score": 0.38, "deferred": false, "api_response": {"accept_partial": false, "allow_full_payment": false, "amount": 29900, "amount_paid": 0, "cancelled_at": 0, "created_at": 1788616929, "currency": "INR", "customer": {"name": "Dhruv Chawla"}, "description": "\u0928\u092e\u0938\u094d\u0924\u0947 Dhruv, \u0906\u092a\u0915\u093e Rs.299 \u0915\u093e \u092d\u0941\u0917\u0924\u093e\u0928 \u0928\u0939\u0940\u0902 \u0939\u094b \u0938\u0915\u093e\u0964 \u0915\u0943\u092a\u092f\u093e \u092f\u0939\u093e\u0901 \u092a\u0942\u0930\u093e \u0915\u0930\u0947\u0902\u0964", "expire_by": 0, "expired_at": 0, "first_min_partial_amount": 0, "id": "plink_TYNhH1CeU70rS8", "notes": {"record_id": "TXN0004", "run_suffix": "d3gc6h", "source": "revenue-recovery-agent"}, "notify": {"email": false, "sms": false, "whatsapp": false}, "payment_plan": false, "payments": null, "reference_id": "TXN0004-d3gc6h", "reminder_enable": false, "reminders": [], "short_url": "https://rzp.io/rzp/zBYvssQ", "status": "created", "updated_at": 1788616929, "upi_link": false, "user_id": "", "whatsapp_link": false, "mock": false}, "outcome": "link_sent", "customer_message": "\u0928\u092e\u0938\u094d\u0924\u0947 Dhruv, \u0906\u092a\u0915\u093e Rs.299 \u0915\u093e \u092d\u0941\u0917\u0924\u093e\u0928 \u0928\u0939\u0940\u0902 \u0939\u094b \u0938\u0915\u093e\u0964 \u0915\u0943\u092a\u092f\u093e \u092f\u0939\u093e\u0901 \u092a\u0942\u0930\u093e \u0915\u0930\u0947\u0902\u0964"}}, {"timestamp": "2026-09-05T14:02:28.125400+00:00", "record_id": "TXN0005", "transaction_type": "subscription", "failure_reason": "bank_decline", "amount_inr": 499, "attempt_count": 2, "action_taken": "SEND_INCENTIVE_LINK", "reasoning": "Propensity 0.41 in discount window \u2014 one-time 10% retention offer before escalation.", "stop_after_this": false, "propensity_score": 0.41, "execution": {"record_id": "TXN0005", "action": "SEND_INCENTIVE_LINK", "executed_at": "2026-09-05T14:02:12.638649+00:00", "mock_mode": false, "message_language": "en", "propensity_score": 0.41, "deferred": false, "api_response": {"accept_partial": false, "allow_full_payment": false, "amount": 44900, "amount_paid": 0, "cancelled_at": 0, "created_at": 1788616944, "currency": "INR", "customer": {"name": "Ayaan Wali"}, "description": "Hi Ayaan! Pay Rs.499 today and get 10% off. Limited-time offer \u2014 don't miss it.", "expire_by": 0, "expired_at": 0, "first_min_partial_amount": 0, "id": "plink_TYNhYTzbgz3ks3", "notes": {"record_id": "TXN0005", "run_suffix": "d3gc6h", "source": "revenue-recovery-agent"}, "notify": {"email": false, "sms": false, "whatsapp": false}, "payment_plan": false, "payments": null, "reference_id": "TXN0005-d3gc6h", "reminder_enable": false, "reminders": [], "short_url": "https://rzp.io/rzp/wo80Hx70", "status": "created", "updated_at": 1788616944, "upi_link": false, "user_id": "", "whatsapp_link": false, "mock": false}, "outcome": "incentive_link_sent", "original_amount_inr": 499, "discounted_amount_inr": 449, "customer_message": "Hi Ayaan! Pay Rs.499 today and get 10% off. Limited-time offer \u2014 don't miss it."}}, {"timestamp": "2026-09-05T14:02:28.724187+00:00", "record_id": "TXN0006", "transaction_type": "b2b_invoice", "failure_reason": "invoice_overdue", "amount_inr": 75000, "attempt_count": 3, "action_taken": "INITIATE_VOICE_CALL", "reasoning": "Attempt cap (3) reached on high-value txn (\u20b975000). Final Hinglish voice recovery before human queue.", "stop_after_this": true, "propensity_score": 0.17, "execution": {"record_id": "TXN0006", "action": "INITIATE_VOICE_CALL", "executed_at": "2026-09-05T14:02:28.125489+00:00", "mock_mode": false, "message_language": "hinglish", "propensity_score": 0.17, "deferred": false, "api_response": {"id": null, "status": "error", "channel": "voice_webrtc", "provider": "vapi", "web_call_url": null, "voice_script": "Hello Atharv! Main aapke pending payment ke baare mein call kar raha hoon \u2014 amount hai 75,000 rupees. ... Payment link WhatsApp pe chahiye to 1 dabaiye, ya agent se baat karne ke liye line pe rahiye. Dhanyavaad!", "language": "hinglish", "mock": false, "error": "401 Client Error: Unauthorized for url: https://api.vapi.ai/call"}, "outcome": "voice_call_initiated", "customer_message": "Hello Atharv! Main aapke pending payment ke baare mein call kar raha hoon \u2014 amount hai 75,000 rupees. ... Payment link WhatsApp pe chahiye to 1 dabaiye, ya agent se baat karne ke liye line pe rahiye. Dhanyavaad!", "voice": {"language": "hinglish", "script": "Hello Atharv! Main aapke pending payment ke baare mein call kar raha hoon \u2014 amount hai 75,000 rupees. ... Payment link WhatsApp pe chahiye to 1 dabaiye, ya agent se baat karne ke liye line pe rahiye. Dhanyavaad!", "estimated_duration_sec": 14, "reason": "invoice_overdue", "channel": "voice_ivr"}}}, {"timestamp": "2026-09-05T14:02:44.648874+00:00", "record_id": "TXN0007", "transaction_type": "checkout_abandonment", "failure_reason": "cart_abandoned", "amount_inr": 9999, "attempt_count": 0, "action_taken": "SEND_CHECKOUT_RECOVERY", "reasoning": "Cart abandoned 0h ago \u2014 high-intent window (<1h). Send recovery link immediately before the session goes cold.", "stop_after_this": false, "propensity_score": 0.81, "execution": {"record_id": "TXN0007", "action": "SEND_CHECKOUT_RECOVERY", "executed_at": "2026-09-05T14:02:28.724256+00:00", "mock_mode": false, "message_language": "hinglish", "propensity_score": 0.81, "deferred": false, "api_response": {"accept_partial": false, "allow_full_payment": false, "amount": 500000, "amount_paid": 0, "cancelled_at": 0, "created_at": 1788616961, "currency": "INR", "customer": {"name": "Gopal Magar"}, "description": "Hi Gopal! Aapne 0 ghante pehle Rs.9,999 ki shopping adhoori chodi. Abhi complete karein!", "expire_by": 0, "expired_at": 0, "first_min_partial_amount": 0, "id": "plink_TYNhqUAEN6D7xe", "notes": {"record_id": "TXN0007", "run_suffix": "d3gc6h", "source": "revenue-recovery-agent"}, "notify": {"email": false, "sms": false, "whatsapp": false}, "payment_plan": false, "payments": null, "reference_id": "TXN0007-d3gc6h", "reminder_enable": false, "reminders": [], "short_url": "https://rzp.io/rzp/S1ZNVTdI", "status": "created", "updated_at": 1788616961, "upi_link": false, "user_id": "", "whatsapp_link": false, "mock": false, "test_mode_amount_capped": true, "original_amount_inr": 9999, "capped_amount_inr": 5000}, "outcome": "checkout_recovery_link_sent", "checkout_session_id": "order_cart_0007", "hours_since_checkout": 0, "customer_message": "Hi Gopal! Aapne 0 ghante pehle Rs.9,999 ki shopping adhoori chodi. Abhi complete karein!"}}, {"timestamp": "2026-09-05T14:03:00.171626+00:00", "record_id": "TXN0008", "transaction_type": "subscription", "failure_reason": "3ds_auth_fail", "amount_inr": 199, "attempt_count": 1, "action_taken": "SEND_PAYMENT_LINK", "reasoning": "Subscription SUB0008 3ds_auth_fail \u2014 send link so customer can update payment method.", "stop_after_this": false, "propensity_score": 0.38, "execution": {"record_id": "TXN0008", "action": "SEND_PAYMENT_LINK", "executed_at": "2026-09-05T14:02:44.648963+00:00", "mock_mode": false, "message_language": "hinglish", "propensity_score": 0.38, "deferred": false, "api_response": {"accept_partial": false, "allow_full_payment": false, "amount": 19900, "amount_paid": 0, "cancelled_at": 0, "created_at": 1788616976, "currency": "INR", "customer": {"name": "Arunima Dhaliwal"}, "description": "Hi Arunima! Aapka Rs.199 ka payment process nahi hua. Please is link se complete karein.", "expire_by": 0, "expired_at": 0, "first_min_partial_amount": 0, "id": "plink_TYNi7T1B75k8FA", "notes": {"record_id": "TXN0008", "run_suffix": "d3gc6h", "source": "revenue-recovery-agent"}, "notify": {"email": false, "sms": false, "whatsapp": false}, "payment_plan": false, "payments": null, "reference_id": "TXN0008-d3gc6h", "reminder_enable": false, "reminders": [], "short_url": "https://rzp.io/rzp/668Dd6Z", "status": "created", "updated_at": 1788616976, "upi_link": false, "user_id": "", "whatsapp_link": false, "mock": false}, "outcome": "link_sent", "customer_message": "Hi Arunima! Aapka Rs.199 ka payment process nahi hua. Please is link se complete karein."}}, {"timestamp": "2026-09-05T14:03:00.834514+00:00", "record_id": "TXN0009", "transaction_type": "b2b_invoice", "failure_reason": "bank_decline", "amount_inr": 120000, "attempt_count": 0, "action_taken": "INITIATE_VOICE_CALL", "reasoning": "Invoice 36d overdue (Hora, Ram and Dhaliwal) \u2014 Hinglish/English voice chase before AR escalation.", "stop_after_this": false, "propensity_score": 0.55, "execution": {"record_id": "TXN0009", "action": "INITIATE_VOICE_CALL", "executed_at": "2026-09-05T14:03:00.171699+00:00", "mock_mode": false, "message_language": "en", "propensity_score": 0.55, "deferred": false, "api_response": {"id": null, "status": "error", "channel": "voice_webrtc", "provider": "vapi", "web_call_url": null, "voice_script": "Hello Hamsini. This is an automated call about your pending payment of 120,000 rupees. ... Please press 1 to receive a secure payment link on WhatsApp, or stay on the line to speak with an agent.", "language": "en", "mock": false, "error": "401 Client Error: Unauthorized for url: https://api.vapi.ai/call"}, "outcome": "voice_call_initiated", "customer_message": "Hello Hamsini. This is an automated call about your pending payment of 120,000 rupees. ... Please press 1 to receive a secure payment link on WhatsApp, or stay on the line to speak with an agent.", "voice": {"language": "en", "script": "Hello Hamsini. This is an automated call about your pending payment of 120,000 rupees. ... Please press 1 to receive a secure payment link on WhatsApp, or stay on the line to speak with an agent.", "estimated_duration_sec": 14, "reason": "bank_decline", "channel": "voice_ivr"}}}, {"timestamp": "2026-09-05T14:03:16.581869+00:00", "record_id": "TXN0010", "transaction_type": "subscription", "failure_reason": "bank_decline", "amount_inr": 199, "attempt_count": 2, "action_taken": "SEND_PAYMENT_LINK", "reasoning": "Propensity 0.66 high \u2014 skip discount to protect margin; send plain payment link.", "stop_after_this": false, "propensity_score": 0.66, "execution": {"record_id": "TXN0010", "action": "SEND_PAYMENT_LINK", "executed_at": "2026-09-05T14:03:00.834582+00:00", "mock_mode": false, "message_language": "hi", "propensity_score": 0.66, "deferred": false, "api_response": {"accept_partial": false, "allow_full_payment": false, "amount": 19900, "amount_paid": 0, "cancelled_at": 0, "created_at": 1788616993, "currency": "INR", "customer": {"name": "Teerth Nadig"}, "description": "\u0928\u092e\u0938\u094d\u0924\u0947 Teerth, \u0906\u092a\u0915\u093e Rs.199 \u0915\u093e \u092d\u0941\u0917\u0924\u093e\u0928 \u0928\u0939\u0940\u0902 \u0939\u094b \u0938\u0915\u093e\u0964 \u0915\u0943\u092a\u092f\u093e \u092f\u0939\u093e\u0901 \u092a\u0942\u0930\u093e \u0915\u0930\u0947\u0902\u0964", "expire_by": 0, "expired_at": 0, "first_min_partial_amount": 0, "id": "plink_TYNiPM08Lp5S9X", "notes": {"record_id": "TXN0010", "run_suffix": "d3gc6h", "source": "revenue-recovery-agent"}, "notify": {"email": false, "sms": false, "whatsapp": false}, "payment_plan": false, "payments": null, "reference_id": "TXN0010-d3gc6h", "reminder_enable": false, "reminders": [], "short_url": "https://rzp.io/rzp/6X9NNyRx", "status": "created", "updated_at": 1788616993, "upi_link": false, "user_id": "", "whatsapp_link": false, "mock": false}, "outcome": "link_sent", "customer_message": "\u0928\u092e\u0938\u094d\u0924\u0947 Teerth, \u0906\u092a\u0915\u093e Rs.199 \u0915\u093e \u092d\u0941\u0917\u0924\u093e\u0928 \u0928\u0939\u0940\u0902 \u0939\u094b \u0938\u0915\u093e\u0964 \u0915\u0943\u092a\u092f\u093e \u092f\u0939\u093e\u0901 \u092a\u0942\u0930\u093e \u0915\u0930\u0947\u0902\u0964"}}];
+    const EVAL = {"mock_mode": false, "total_records": 10, "total_amount_at_risk_inr": 326993, "recovered_amount_inr": 200985, "recovered_count": 8, "recovery_rate_pct": 80.0, "escalated_count": 2, "escalated_pct": 20.0, "voice_call_count": 3, "scheduled_retry_count": 0, "action_breakdown": {"ESCALATE_TO_HUMAN": 2, "INITIATE_VOICE_CALL": 3, "SEND_PAYMENT_LINK": 3, "SEND_INCENTIVE_LINK": 1, "SEND_CHECKOUT_RECOVERY": 1}, "transaction_type_breakdown": {"subscription": 6, "b2b_invoice": 3, "checkout_abandonment": 1}, "measured_recovery": {"total_transactions": 128, "total_at_risk_inr": 2668410, "recovered_amount_inr": 200985, "recovered_event_count": 21, "recovered_transaction_count": 8, "recovery_rate_pct": 6.2, "note": "recovered_amount_inr is attributed from payment.captured / payment_link.paid / order.paid webhooks \u2014 measured money, not links sent."}, "note": "Recovered amounts include mock RETRY_PAYMENT captures and RecoveryEvent rows from payment.captured / payment_link.paid webhooks. SEND_*_LINK outcomes remain pending until customer pays. INITIATE_VOICE_CALL is Hinglish voice recovery (Track 03). outcome=scheduled means retry_delay_hours was deferred to the job queue."};
+
+    const ACTION_COLORS = {
+      RETRY_PAYMENT: '#5EEAD4', SEND_PAYMENT_LINK: '#A78BFA', SEND_INCENTIVE_LINK: '#F5B942',
+      ESCALATE_TO_HUMAN: '#F97362', NO_ACTION: '#8B92A5', SEND_CHECKOUT_RECOVERY: '#60A5FA',
+      SEND_MANDATE_SETUP: '#A78BFA', LOG_PROMISE_TO_PAY: '#5EEAD4', INITIATE_VOICE_CALL: '#F472B6'
+    };
+    const TYPE_COLORS = { subscription: '#60A5FA', b2b_invoice: '#F5B942', one_time_payment: '#A78BFA', checkout_abandonment: '#F472B6' };
+    const REASON_COLORS = { bank_decline: '#60A5FA', insufficient_funds: '#5EEAD4', card_expired: '#F97362', mandate_revoked: '#F97362', '3ds_auth_fail': '#A78BFA', bank_downtime: '#5EEAD4', invoice_overdue: '#F5B942', hard_decline: '#F97362', cart_abandoned: '#F472B6', promise_broken: '#F97362' };
+
+    function fmtINR(n) { return '₹' + n.toLocaleString('en-IN'); }
+
+    document.getElementById('mock-badge').textContent = EVAL.mock_mode ? 'MOCK MODE' : 'LIVE TEST MODE';
+    document.getElementById('run-badge').textContent = EVAL.total_records + ' RECORDS';
+    document.getElementById('m-atrisk').textContent = fmtINR(EVAL.total_amount_at_risk_inr);
+    document.getElementById('m-recovered').textContent = fmtINR(EVAL.recovered_amount_inr);
+    document.getElementById('m-rate').textContent = EVAL.recovery_rate_pct + '% recovery' + (EVAL.voice_call_count ? ` · ${EVAL.voice_call_count} voice` : '');
+    document.getElementById('m-links').textContent = (EVAL.action_breakdown.SEND_PAYMENT_LINK || 0) + (EVAL.action_breakdown.SEND_INCENTIVE_LINK || 0) + (EVAL.action_breakdown.SEND_CHECKOUT_RECOVERY || 0);
+    document.getElementById('m-escalated').textContent = EVAL.escalated_count;
+    document.getElementById('m-esc-pct').textContent = EVAL.escalated_pct + '% of cases' + (EVAL.scheduled_retry_count ? ` · ${EVAL.scheduled_retry_count} scheduled` : '');
+    const incentiveCount = EVAL.action_breakdown.SEND_INCENTIVE_LINK || 0;
+    document.getElementById('m-incentive').textContent = incentiveCount + '/' + incentiveCount;
+    document.getElementById('disclosure-text').textContent = '⚠ ' + EVAL.note;
+
+    function renderBarChart(elId, dataObj, colors, labelFn) {
+      const el = document.getElementById(elId);
+      const max = Math.max(...Object.values(dataObj));
+      Object.entries(dataObj).sort((a, b) => b[1] - a[1]).forEach(([k, v]) => {
+        const pct = (v / max) * 100;
+        const row = document.createElement('div');
+        row.className = 'bar-row';
+        row.innerHTML = `<div class="bar-label">${labelFn ? labelFn(k) : k}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${colors[k] || '#666'}"><span class="bar-count">${v}</span></div></div>`;
+        el.appendChild(row);
+      });
+    }
+
+    renderBarChart('bar-chart', EVAL.action_breakdown, ACTION_COLORS, k => k.replace(/_/g, ' '));
+    renderBarChart('type-chart', EVAL.transaction_type_breakdown, TYPE_COLORS, k => k.replace(/_/g, ' '));
+
+    const reasonCounts = {};
+    AUDIT.forEach(a => { reasonCounts[a.failure_reason] = (reasonCounts[a.failure_reason] || 0) + 1; });
+    renderBarChart('reason-chart', reasonCounts, REASON_COLORS, k => k.replace(/_/g, ' '));
+
+    const actions = ['all', ...Object.keys(EVAL.action_breakdown)];
+    const filtersEl = document.getElementById('filters');
+    let activeFilter = 'all';
+
+    function apiCell(entry) {
+      const ex = entry.execution;
+
+      // failed real API calls (api_error / rate_limited) — show a clear, honest error tag
+      if (ex.outcome === 'api_error' || ex.outcome === 'rate_limited') {
+        const msg = ex.error ? ex.error.slice(0, 60) : ex.outcome.replace(/_/g, ' ');
+        return `<span style="color:var(--coral);font-family:var(--mono);font-size:10px" title="${(ex.error || '').replace(/"/g, '&quot;')}">⚠ ${msg}</span>`;
+      }
+
+      // no API call was made at all (escalation / no-op) — plain muted label
+      if (!ex.api_response) {
+        return `<span style="color:var(--muted)">${ex.outcome.replace(/_/g, ' ')}</span>`;
+      }
+
+      // real or mock success WITH a payment link — actual clickable anchor
+      if (ex.api_response.short_url) {
+        const url = ex.api_response.short_url;
+        const label = url.replace('https://', '');
+        const isMock = ex.api_response.mock;
+        const badge = isMock ? '' : ' <span style="color:var(--teal);font-size:8.5px">●LIVE</span>';
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:var(--violet);text-decoration:underline;font-family:var(--mono);font-size:10px">${label}</a>${badge}`;
+      }
+
+      // voice call — show web_call_url if present
+      if (ex.outcome === 'voice_call_initiated') {
+        const webUrl = ex.api_response && ex.api_response.web_call_url;
+        const script = (ex.voice && ex.voice.script) ? ex.voice.script.slice(0, 60) + '…' : 'voice call';
+        const isMock = ex.api_response && ex.api_response.mock;
+        if (webUrl && !isMock) {
+          return `<a href="${webUrl}" target="_blank" rel="noopener noreferrer" style="color:#F472B6;text-decoration:underline;font-family:var(--mono);font-size:10px;">📞 Open Call</a>`;
+        }
+        return `<span style="color:#F472B6" title="${(ex.voice && ex.voice.script || '').replace(/"/g, '&quot;')}">📞 ${isMock ? '[mock] ' : ''}${script}</span>`;
+      }
+
+      return `<span style="color:var(--muted)">${ex.outcome.replace(/_/g, ' ')}</span>`;
+    }
+
+    function renderTable() {
+      const body = document.getElementById('audit-body');
+      body.innerHTML = '';
+      const rows = activeFilter === 'all' ? AUDIT : AUDIT.filter(a => a.action_taken === activeFilter);
+      rows.forEach(entry => {
+        const row = document.createElement('div');
+        row.className = 'audit-row';
+        row.style.gridTemplateColumns = '78px 76px 95px 1fr 140px 110px 110px 22px';
+
+        const exMsg = entry.execution && entry.execution.customer_message ? entry.execution.customer_message : '';
+        const lang = entry.execution && entry.execution.message_language ? entry.execution.message_language : 'en';
+        const msgHtml = exMsg ? `<div style="font-size:10px;color:var(--teal);margin-top:3px;font-style:italic;">💬 "${exMsg}"</div>` : '';
+
+        row.innerHTML = `
+      <div class="rid">${entry.record_id}</div>
+      <div><span class="type-chip" style="color:${TYPE_COLORS[entry.transaction_type]}">${entry.transaction_type.split('_')[0]}</span></div>
+      <div><span class="reason-chip">${entry.failure_reason}</span></div>
+      <div class="reasoning">${entry.reasoning}${msgHtml}</div>
+      <div><span class="action-chip" style="background:${ACTION_COLORS[entry.action_taken]}22;color:${ACTION_COLORS[entry.action_taken]}">${entry.action_taken.replace(/_/g, ' ')}</span></div>
+      <div class="api-detail">${apiCell(entry)}</div>
+      <div><span class="type-chip" style="color:var(--amber);background:rgba(245,185,66,.1);">${lang.toUpperCase()}</span></div>
+      <div class="stop-flag" title="${entry.stop_after_this ? 'Terminal' : 'Open'}">${entry.stop_after_this ? '⏹' : '↻'}</div>
+    `;
+        body.appendChild(row);
+      });
+    }
+
+    actions.forEach(a => {
+      const btn = document.createElement('button');
+      btn.className = 'filt-btn' + (a === 'all' ? ' active' : '');
+      btn.textContent = a === 'all' ? `ALL (${AUDIT.length})` : `${a.replace(/_/g, ' ')} (${EVAL.action_breakdown[a] || 0})`;
+      btn.onclick = () => { activeFilter = a; document.querySelectorAll('.filt-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); renderTable(); };
+      filtersEl.appendChild(btn);
+    });
+
+    renderTable();
+
+    // ---- Live API Fetchers ----
+    async function loadLiveIntelligence() {
+      const API_KEY = localStorage.getItem('recovery_api_key')
+        || (new URLSearchParams(location.search).get('api_key'))
+        || 'dev-only-insecure-key';
+      const headers = { "X-Api-Key": API_KEY };
+
+      // 1. Degradation Radar
+      try {
+        const r1 = await fetch('http://127.0.0.1:8000/analyze/degradation?hours=72', { headers });
+        if (r1.ok) {
+          const data = await r1.json();
+          const el = document.getElementById('degradation-panel');
+          if (data.degradation_detected) {
+            let html = `<div style="color:var(--coral);font-weight:700;margin-bottom:4px;">⚠ DEGRADATION DETECTED (${data.clusters.length} Cluster Alerts)</div>`;
+            data.clusters.forEach(c => {
+              const ratePct = Math.round((c.rate != null ? c.rate : c.pct || 0) * 100);
+              html += `<div>• <strong style="color:var(--amber)">${c.failure_reason}</strong>: ${c.count} failures (${ratePct}% rate) → <span style="color:var(--text)">${c.recommendation}</span></div>`;
+            });
+            el.innerHTML = html;
+          } else {
+            el.innerHTML = `<div style="color:var(--teal)">✓ Gateway Health Normal. No bank downtime or fraud spikes detected in last 72h.</div>`;
+          }
+        }
+      } catch (e) {
+        document.getElementById('degradation-panel').innerHTML = `<span style="color:var(--muted)">Server offline or endpoint unreachable. Run uvicorn on port 8000.</span>`;
+      }
+
+      // 2. Promises & Receivables + measured recovery
+      try {
+        const r2 = await fetch('http://127.0.0.1:8000/promises/overdue?auto_route=false', { headers });
+        const r3 = await fetch('http://127.0.0.1:8000/metrics/recovery', { headers });
+        const el = document.getElementById('promises-panel');
+        let html = '';
+        if (r3.ok) {
+          const m = await r3.json();
+          html += `<div style="margin-bottom:8px;"><strong style="color:var(--teal)">Measured Recovered: ${fmtINR(m.recovered_amount_inr || 0)}</strong> of ${fmtINR(m.total_at_risk_inr || 0)} at risk (${m.recovery_rate_pct || 0}%)</div>`;
+        }
+        if (r2.ok) {
+          const data = await r2.json();
+          const promises = data.promises || data.broken_promises || [];
+          html += `<div><strong style="color:var(--violet)">${data.broken_promise_count || 0} Overdue Promises</strong> requiring follow-up.</div>`;
+          promises.slice(0, 3).forEach(p => {
+            html += `<div style="margin-top:2px;">• <span style="color:var(--amber)">${p.contact_name || 'Customer'}</span>: ₹${p.promised_amount_inr} due on ${p.promised_date} (${p.status})</div>`;
+          });
+        }
+        el.innerHTML = html || `<span style="color:var(--muted)">No live metrics yet.</span>`;
+      } catch (e) {
+        document.getElementById('promises-panel').innerHTML = `<span style="color:var(--muted)">Server offline or endpoint unreachable. Run uvicorn on port 8000.</span>`;
+      }
+
+      fetchVoiceCalls().then(renderVoiceCalls);
+    }
+
+    loadLiveIntelligence();
+
+    // ---- Voice Panel Logic ----
+    const API_KEY_V = localStorage.getItem('recovery_api_key')
+      || (new URLSearchParams(location.search).get('api_key'))
+      || 'dev-only-insecure-key';
+
+    const OUTCOME_COLORS = {
+      link_sent: '#5EEAD4', ptp_scheduled: '#A78BFA', opted_out: '#8B92A5',
+      escalated: '#F97362', no_action: '#8B92A5', abandoned: '#F97362'
+    };
+    const STATUS_COLORS = {
+      initiated: '#F472B6', connected: '#5EEAD4', completed: '#5EEAD4',
+      mock: '#8B92A5', queued: '#F5B942', error: '#F97362', no_answer: '#8B92A5'
+    };
+
+    async function fetchVoiceCalls() {
+      try {
+        const r = await fetch('http://127.0.0.1:8000/voice/calls?limit=20',
+          { headers: { "X-Api-Key": API_KEY_V } });
+        if (!r.ok) throw new Error(r.status);
+        return await r.json();
+      } catch (e) { return null; }
+    }
+
+    function renderVoiceCalls(calls) {
+      const el = document.getElementById('voice-call-list');
+      if (!calls) {
+        el.innerHTML = '<div style="color:var(--muted);font-family:var(--mono);padding:12px 6px;">Server offline — start the API server to see live calls.</div>';
+        return;
+      }
+      if (calls.length === 0) {
+        el.innerHTML = '<div style="color:var(--muted);font-family:var(--mono);padding:12px 6px;">No voice calls yet. Click "Launch Demo Call" to start one.</div>';
+      } else {
+        let total = calls.length, connected = 0, converted = 0, ptp = 0;
+        calls.forEach(c => {
+          if (c.status === 'connected' || c.status === 'completed') connected++;
+          if (c.outcome === 'link_sent') converted++;
+          if (c.outcome === 'ptp_scheduled') ptp++;
+        });
+        document.getElementById('v-total').textContent = total;
+        document.getElementById('v-connected').textContent = connected;
+        document.getElementById('v-converted').textContent = converted;
+        document.getElementById('v-ptp').textContent = ptp;
+
+        el.innerHTML = '';
+        calls.forEach(c => {
+          const sc = STATUS_COLORS[c.status] || '#8B92A5';
+          const oc = OUTCOME_COLORS[c.outcome] || '#8B92A5';
+          const row = document.createElement('div');
+          row.className = 'voice-row';
+          const shortId = (c.call_id || '').slice(-8);
+          const scriptPreview = c.voice_script ? c.voice_script.slice(0, 60) + '…' : '—';
+          row.innerHTML = `
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);" title="${c.call_id}">${shortId}</div>
+        <div style="font-family:var(--mono);font-size:10px;">${c.record_id || '—'}</div>
+        <div><span class="v-status-chip" style="background:${sc}22;color:${sc};">${c.status || '—'}</span>${c.mock ? '<span style="font-size:8px;color:var(--muted);margin-left:4px;">[mock]</span>' : ''}</div>
+        <div><span class="v-status-chip" style="background:${oc}22;color:${oc};">${c.outcome || 'pending'}</span></div>
+        <div style="color:var(--muted);font-size:10.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${(c.voice_script || '').replace(/"/g, '&quot;')}">${scriptPreview}</div>
+        <div style="display:flex;gap:4px;">
+          ${c.payment_link_url ? `<a href="${c.payment_link_url}" target="_blank" style="font-size:9.5px;color:var(--violet);border:1px solid rgba(167,139,250,.3);border-radius:4px;padding:2px 6px;text-decoration:none;">Pay Link</a>` : ''}
+          <button class="transcript-btn" onclick="showTranscript('${c.call_id}','${(c.record_id || '').replace(/'/g, "\\'")}')">Transcript</button>
+        </div>
+      `;
+          el.appendChild(row);
+        });
+      }
+    }
+
+    async function showTranscript(callId, recordId) {
+      document.getElementById('transcript-modal').classList.add('open');
+      document.getElementById('transcript-content').innerHTML = '<div style="color:var(--muted);font-family:var(--mono);">Loading...</div>';
+      try {
+        const r = await fetch(`http://127.0.0.1:8000/voice/calls/${callId}`,
+          { headers: { "X-Api-Key": API_KEY_V } });
+        if (!r.ok) throw new Error(r.status);
+        const data = await r.json();
+        const msgs = data.transcript || data.messages || [];
+        if (msgs.length === 0) {
+          document.getElementById('transcript-content').innerHTML =
+            '<div style="color:var(--muted);font-family:var(--mono);font-size:12px;">No transcript yet — call may still be in progress or is a mock call.</div>';
+          return;
+        }
+        let html = '';
+        msgs.forEach(m => {
+          const role = m.role || m.type || 'unknown';
+          const cls = role === 'user' ? 'user' : role === 'assistant' ? 'assistant' : 'tool';
+          const content = m.content || m.message || m.text || JSON.stringify(m);
+          html += `<div class="t-msg ${cls}"><strong>${role}:</strong> ${content}</div>`;
+        });
+        document.getElementById('transcript-content').innerHTML = html;
+      } catch (e) {
+        document.getElementById('transcript-content').innerHTML =
+          `<div style="color:var(--coral);font-family:var(--mono);font-size:12px;">Error loading transcript: ${e.message}</div>`;
+      }
+    }
+
+    function closeTranscript() { document.getElementById('transcript-modal').classList.remove('open'); }
+    function openVoiceLauncher() { document.getElementById('launcher-modal').classList.add('open'); }
+    function closeLauncher() { document.getElementById('launcher-modal').classList.remove('open'); }
+
+    async function submitVoiceLaunch() {
+      const btn = document.getElementById('l-submit-btn');
+      const resultEl = document.getElementById('l-result');
+      btn.disabled = true;
+      btn.textContent = 'Launching...';
+      resultEl.textContent = '';
+
+      const payload = {
+        record_id: document.getElementById('l-record').value || 'DEMO001',
+        customer_name: document.getElementById('l-name').value || 'Customer',
+        amount_inr: parseInt(document.getElementById('l-amount').value || '10000'),
+        failure_reason: document.getElementById('l-reason').value || 'bank_decline',
+      };
+
+      try {
+        const r = await fetch('http://127.0.0.1:8000/voice/call/launch', {
+          method: 'POST',
+          headers: { "X-Api-Key": API_KEY_V, "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await r.json();
+        if (data.web_call_url) {
+          resultEl.innerHTML = `<span style="color:var(--teal);">✓ Call created!</span> <a href="${data.web_call_url}" target="_blank" style="color:var(--violet);">Open in browser →</a>`;
+        } else if (data.mock) {
+          resultEl.innerHTML = `<span style="color:var(--amber);">⚠ Mock call (VAPI_API_KEY not set). Set it in .env for real calls.</span><br><span style="color:var(--muted);font-size:10px;">call_id: ${data.call_id}</span>`;
+        } else {
+          resultEl.innerHTML = `<span style="color:var(--coral);">Error: ${data.error || JSON.stringify(data)}</span>`;
+        }
+        // Refresh call list
+        setTimeout(() => fetchVoiceCalls().then(renderVoiceCalls), 1200);
+      } catch (e) {
+        resultEl.innerHTML = `<span style="color:var(--coral);">Error: ${e.message} — is the server running?</span>`;
+      }
+      btn.disabled = false;
+      btn.textContent = '▶ Start Call with Riya';
+    }
+
+    async function generateSarvamAudio() {
+      const text = document.getElementById('sarvam-text-input').value;
+      const speaker = document.getElementById('sarvam-speaker-select').value;
+      const resultDiv = document.getElementById('sarvam-audio-result');
+      const player = document.getElementById('sarvam-audio-player');
+      const meta = document.getElementById('sarvam-audio-meta');
+
+      resultDiv.style.display = 'flex';
+      meta.innerHTML = '<span style="color:var(--amber)">Synthesizing audio via Sarvam AI...</span>';
+
+      try {
+        const res = await fetch('http://127.0.0.1:8000/voice/sarvam/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text, speaker })
+        });
+        const data = await res.json();
+        if (data.audio_b64) {
+          player.src = 'data:audio/wav;base64,' + data.audio_b64;
+          player.play();
+          meta.innerHTML = `<span style="color:var(--teal)">✓ ${data.mock ? '[Mock Demo]' : '[Live Sarvam AI API]'}</span> Speaker: <strong>${data.speaker}</strong> · Duration: ${(data.duration_ms / 1000).toFixed(1)}s`;
+        } else {
+          meta.innerHTML = `<span style="color:var(--coral)">Error: ${data.error || 'Failed to synthesize audio'}</span>`;
+        }
+      } catch (e) {
+        meta.innerHTML = `<span style="color:var(--coral)">Error connecting to http://127.0.0.1:8000 — is server running?</span>`;
+      }
+    }
+  </script>
+</body>
+
+</html>

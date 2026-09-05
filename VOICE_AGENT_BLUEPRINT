@@ -1,0 +1,53 @@
+Project Blueprint: Hinglish Voice Recovery Agent
+Track: Track 03 — AI Revenue Recovery (Razorpay AI Buildathon)
+
+Core Objective: Build an automated conversational AI agent using natural spoken Hinglish to detect failed/at-risk payments, diagnose root causes, and execute bounded recovery workflows at zero software cost.
+
+1. Executive Summary & Core Concept
+Hinglish Voice Recovery replaces passive, low-conversion reminder SMS/emails with real-time, interactive, voice-based outreach. The agent dynamically code-switches between Hindi and English, detects the failure reason (e.g., daily UPI limit hit, network drop, or forgotten renewal), triggers immediate remediation actions (such as sending a direct WhatsApp/SMS payment link via Razorpay APIs), and schedules Promise-to-Pay (PTP) retry sequences with strict compliance guardrails.
+
+2. End-to-End System Architecture
+Layer	Recommended Choice	Free Tier / Cost Model	Role in Architecture
+Voice & Telephony	Vapi / Retell AI / Sarvam AI	Free signup credits ($10 trial balance / WebRTC browser testing)	Real-time audio streaming, speech-to-text, Indian accent / Hinglish TTS synthesis.
+Agent Brain / LLM	Gemini 1.5 Flash / Groq (Llama 3)	100% Free Tier (Google AI Studio / Groq API)	Fast token generation, intent classification, and structured JSON function calling.
+Backend & APIs	Node.js (Express) or Python (FastAPI)	Free on Render / Railway / Localhost	Handles tool webhook execution, Razorpay integration, and database state transitions.
+Payments	Razorpay Test Mode APIs	100% Free (Unlimited Sandbox)	Generates payment links, tracks invoice states, and verifies recovery.
+Database & Audit	Supabase / Neon (PostgreSQL) or SQLite	100% Free Tier	Maintains immutable logs of transcripts, tool IDs, PTP dates, and outcome statuses.
+Dashboard UI	React + Tailwind CSS (Vercel)	100% Free Tier	Visualizes batch recovery simulation, live transcripts, and financial analytics.
+3. Core Tool Definitions (Agent Function Calling)
+The voice agent executes actions during calls by triggering backend webhook endpoints:
+
+send_payment_link(phone_number, amount, method): Dispatches a dynamic Razorpay payment link via WhatsApp or SMS immediately when customer agrees to pay.
+
+schedule_ptp_retry(customer_id, agreed_date_time): Records a Promise-to-Pay timestamp (e.g., "Kal subah 10 baje try kijiye") and queues an automated retry or reminder mandate.
+
+mark_opt_out(customer_id, reason): Immediately flags the contact as DND / Do-Not-Disturb and halts all future automated outbound interactions.
+
+escalate_to_human(customer_id, issue_type): Routes complex disputes (e.g., duplicate charges, pending bank refunds) to support desk queues.
+
+4. Agent System Prompt & Guardrail Guidelines
+Language & Persona: Speak natural, polite Indian Hinglish (e.g., "Namaste! Aapka order payment complete nahi ho paya tha. Kya main instant UPI link WhatsApp par share kar doon?"). Keep voice responses concise (1–2 sentences max).
+
+Compliance Stopping Rules: If the user expresses hesitation or asks to stop (e.g., "Call mat karo / Not interested"), apologize once, call mark_opt_out, and gracefully disconnect.
+
+Security Invariants: The voice agent is strictly forbidden from asking for, reading, or accepting OTPs, card CVVs, or bank passwords.
+
+Outreach Frequency Bounds: Maximum 2 outbound call attempts per customer in any 24-hour rolling window.
+
+5. End-to-End Workflow & Life Cycle
+Trigger: Razorpay webhook notifies backend of a failed payment (payment.failed) or overdue invoice.
+
+Queue & Call: Backend schedules an outbound call via voice provider.
+
+Diagnostic Conversation: Agent determines the obstacle (e.g., UPI daily limit exceeded vs. busy schedule).
+
+Remediation: Agent triggers send_payment_link or schedule_ptp_retry.
+
+Audit & Settlement: Complete audio transcript, tool calls, and recovered amount recorded in PostgreSQL.
+
+6. Meeting Track 03 Evaluation Bar ("The Bar")
+Batch Simulation: Pre-load 25–50 synthetic failed transactions representing distinct decline scenarios.
+
+Measured Recovery Metrics: Dashboard reports gross money recovered, conversion rate %, and drop-off reasons.
+
+Full Audit Trail: Every action is fully explainable, bounded, gated, and displayed with timestamps in the web interface.
